@@ -2,7 +2,7 @@
    LEDGER — Frontend API Connected Version
    Connects to Node.js/Express + PostgreSQL + Prisma Backend
    ========================================================= */
-const API_BASE = 'https://family-expense-tracker-u0np.onrender.com';
+const API_BASE_URL = "https://family-expense-tracker-u0np.onrender.com/api";
 const AVATAR_COLORS = ['#35e0a1', '#8b8fff', '#ff6b6b', '#ffc857', '#5bc0ff'];
 
 const state = {

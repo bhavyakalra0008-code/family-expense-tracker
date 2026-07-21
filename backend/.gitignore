@@ -1,0 +1,12 @@
+# Environment secrets (Never push these!)
+.env
+*.env
+
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Logs & Build files
+dist/
+build/
+*.log

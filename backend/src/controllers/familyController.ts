@@ -102,8 +102,8 @@ export async function addChild(req: AuthenticatedRequest, res: Response, next: N
 
 export async function updateChild(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const familyId = req.user!.familyId;
-    const childId = req.params.id;
+    const familyId = req.user!.familyId as string;
+    const childId = req.params.id as string;
     const updates = UpdateChildSchema.parse(req.body);
 
     const child = await prisma.child.findFirst({

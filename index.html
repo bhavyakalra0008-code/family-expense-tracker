@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ledger — Family Expense Tracker</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ======================= ROLE LANDING VIEW ======================= -->
+    <section id="view-landing" class="view view-auth active">
+        <div class="auth-backdrop"></div>
+        <div class="landing-card glass">
+            <div class="brand">
+                <span class="brand-mark"><i class="fa-solid fa-receipt"></i></span>
+                <span class="brand-name">Ledger</span>
+            </div>
+            <p class="auth-tag">One inbox for every kid's spending.</p>
+
+            <div class="role-select">
+                <button class="role-card" id="pick-parent">
+                    <span class="role-icon parent"><i class="fa-solid fa-user-shield"></i></span>
+                    <span class="role-title">I'm a Parent</span>
+                    <span class="role-sub">Manage the family, add children, review spending</span>
+                    <span class="role-go"><i class="fa-solid fa-arrow-right"></i></span>
+                </button>
+                <button class="role-card" id="pick-child">
+                    <span class="role-icon child"><i class="fa-solid fa-child-reaching"></i></span>
+                    <span class="role-title">I'm a Kid</span>
+                    <span class="role-sub">Sign in with your own account to see your spending</span>
+                    <span class="role-go"><i class="fa-solid fa-arrow-right"></i></span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================= PARENT AUTH VIEW ======================= -->
+    <section id="view-auth-parent" class="view view-auth">
+        <div class="auth-backdrop"></div>
+        <div class="auth-card glass">
+            <button class="back-link" data-back-to="landing"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <div class="brand">
+                <span class="brand-mark"><i class="fa-solid fa-user-shield"></i></span>
+                <span class="brand-name">Parent login</span>
+            </div>
+            <p class="auth-tag">Register your family or log in as Admin.</p>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-auth-tab="login">Log in</button>
+                <button class="auth-tab" data-auth-tab="register">Register family</button>
+            </div>
+
+            <!-- Login -->
+            <form id="form-login" class="auth-form active" data-auth-form="login">
+                <label class="field">
+                    <span>Email</span>
+                    <input type="email" placeholder="you@email.com" required>
+                </label>
+                <label class="field">
+                    <span>Password</span>
+                    <input type="password" placeholder="Your password" required>
+                </label>
+                <button type="submit" class="btn btn-primary btn-block">Log in <i
+                        class="fa-solid fa-arrow-right"></i></button>
+                <button type="button" class="text-link" id="btn-forgot-password">Forgot password?</button>
+            </form>
+
+            <form id="form-forgot-password" class="auth-form" data-auth-form="forgot-password">
+                <label class="field">
+                    <span>Parent email</span>
+                    <input type="email" id="forgot-password-email" placeholder="you@email.com" required>
+                </label>
+                <button type="submit" class="btn btn-primary btn-block">Email reset link <i class="fa-solid fa-envelope"></i></button>
+                <button type="button" class="text-link" id="btn-back-to-login">Back to login</button>
+            </form>
+
+            <!-- Register -->
+            <form id="form-register" class="auth-form" data-auth-form="register">
+                <label class="field">
+                    <span>Family name</span>
+                    <input type="text" placeholder="e.g. The Malhotras" required>
+                </label>
+                <label class="field">
+                    <span>Your name (Admin)</span>
+                    <input type="text" placeholder="Your full name" required>
+                </label>
+                <label class="field">
+                    <span>Email</span>
+                    <input type="email" placeholder="you@email.com" required>
+                </label>
+                <label class="field">
+                    <span>Password</span>
+                    <input type="password" placeholder="Create a password" required>
+                </label>
+                <button type="submit" class="btn btn-primary btn-block">Create family <i
+                        class="fa-solid fa-arrow-right"></i></button>
+            </form>
+
+            <p class="auth-foot">By continuing you agree to let Ledger read bank SMS notifications on registered devices
+                only.</p>
+        </div>
+    </section>
+
+    <!-- ======================= CHILD AUTH VIEW (separate login) ======================= -->
+    <section id="view-auth-child" class="view view-auth">
+        <div class="auth-backdrop"></div>
+        <div class="auth-card glass">
+            <button class="back-link" data-back-to="landing"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <div class="brand">
+                <span class="brand-mark child-mark"><i class="fa-solid fa-child-reaching"></i></span>
+                <span class="brand-name">Kid login</span>
+            </div>
+            <p class="auth-tag">Enter your Family Code, then pick your profile and enter your PIN.</p>
+
+            <label class="field child-family-field">
+                <span>Family Code</span>
+                <select id="child-family-select" required>
+                    <option value="">Choose your Family Code</option>
+                </select>
+            </label>
+
+            <div class="avatar-grid" id="avatar-grid"></div>
+
+            <form id="form-child-login" class="auth-form active" style="margin-top:18px;">
+                <label class="field">
+                    <span>4-digit PIN</span>
+                    <input type="password" id="input-child-pin" maxlength="4" inputmode="numeric" pattern="[0-9]{4}"
+                        placeholder="••••" required disabled>
+                </label>
+                <button type="submit" class="btn btn-primary btn-block" id="btn-child-login" disabled>
+                    Log in <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <button type="button" class="text-link" id="btn-forgot-pin" disabled>Forgot PIN? Ask parent to reset it</button>
+            </form>
+            <p class="auth-foot">Each child signs in with their own PIN — set by a parent when their profile was
+                created. No one can see another sibling's spending from here.</p>
+        </div>
+    </section>
+
+    <!-- ======================= ADMIN APP SHELL ======================= -->
+    <div id="admin-shell" class="app-shell">
+
+        <nav class="side-nav">
+            <div class="brand small">
+                <span class="brand-mark"><i class="fa-solid fa-receipt"></i></span>
+                <span class="brand-name">Ledger</span>
+            </div>
+
+            <div class="nav-links">
+                <button class="nav-link active" data-nav="admin-dashboard">
+                    <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+                </button>
+                <button class="nav-link" data-nav="simulate">
+                    <i class="fa-solid fa-comment-sms"></i><span>Simulate SMS</span>
+                </button>
+            </div>
+
+            <button class="nav-link logout" id="btn-logout-admin">
+                <i class="fa-solid fa-right-from-bracket"></i><span>Log out</span>
+            </button>
+        </nav>
+
+        <main class="main-area">
+
+            <header class="topbar">
+                <div class="topbar-title">
+                    <h1 id="topbar-heading">Dashboard</h1>
+                    <p id="topbar-sub" class="muted">Welcome back, here's what's happening this month</p>
+                </div>
+                <div class="topbar-actions">
+                    <span class="pill"><i class="fa-regular fa-calendar"></i> <span class="current-month"></span></span>
+                    <span class="pill" id="family-code-display">Family Code: --</span>
+                    <div class="avatar" id="user-avatar">P</div>
+                    <button class="btn btn-ghost btn-sm" id="btn-logout-admin-top"><i
+                            class="fa-solid fa-right-from-bracket"></i> Log out</button>
+                </div>
+            </header>
+
+            <!-- ============ ADMIN DASHBOARD VIEW ============ -->
+            <section id="view-admin-dashboard" class="view active">
+
+                <div class="grid-hero">
+                    <div class="card hero-card glass">
+                        <div class="hero-label">Total family spend · July</div>
+                        <div class="hero-amount" id="total-spend">₹0</div>
+                        <div class="hero-meta">
+                            <span class="tag tag-expense"><i class="fa-solid fa-arrow-trend-up"></i> <span
+                                    id="spend-trend">+0%</span> vs last month</span>
+                            <span class="tag tag-budget"><i class="fa-solid fa-shield-halved"></i> <span
+                                    id="budget-remaining-label">₹0 budget left</span></span>
+                        </div>
+                        <div class="hero-progress">
+                            <div class="hero-progress-bar" id="hero-progress-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card glass">
+                        <i class="fa-solid fa-users stat-icon"></i>
+                        <div>
+                            <div class="stat-value" id="stat-children">0</div>
+                            <div class="stat-label">Children tracked</div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card glass">
+                        <i class="fa-solid fa-receipt stat-icon coral"></i>
+                        <div>
+                            <div class="stat-value" id="stat-transactions">0</div>
+                            <div class="stat-label">Transactions this month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-charts">
+                    <div class="card chart-card glass">
+                        <div class="card-head">
+                            <h3>Spend by child</h3>
+                            <span class="muted small">This month</span>
+                        </div>
+                        <div class="chart-wrap"><canvas id="chart-by-child"></canvas></div>
+                    </div>
+
+                    <div class="card chart-card glass">
+                        <div class="card-head">
+                            <h3>Spend by vendor</h3>
+                            <span class="muted small">This month</span>
+                        </div>
+                        <div class="chart-wrap"><canvas id="chart-by-vendor"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="grid-lower">
+                    <div class="card glass members-card">
+                        <div class="card-head">
+                            <h3>Family members</h3>
+                            <button class="btn btn-ghost btn-sm" id="btn-add-child-inline"><i
+                                    class="fa-solid fa-plus"></i> Add child</button>
+                        </div>
+                        <div id="members-list" class="members-list"></div>
+                    </div>
+
+                    <div class="card glass activity-card">
+                        <div class="card-head">
+                            <h3>Latest activity</h3>
+                            <span class="muted small" id="activity-count">0 events</span>
+                        </div>
+                        <div id="activity-feed" class="activity-feed"></div>
+                    </div>
+                </div>
+
+                <div class="card glass notifications-card">
+                    <div class="card-head">
+                        <h3><i class="fa-solid fa-bell"></i> Notifications</h3>
+                        <span class="muted small" id="notification-count">0 alerts</span>
+                    </div>
+                    <div id="budget-notifications" class="budget-notifications"></div>
+                </div>
+
+                <div class="card glass notifications-card">
+                    <div class="card-head">
+                        <h3><i class="fa-solid fa-key"></i> PIN reset requests</h3>
+                        <span class="muted small" id="pin-request-count">0 pending</span>
+                    </div>
+                    <div id="pin-reset-requests" class="budget-notifications"></div>
+                </div>
+            </section>
+
+            <!-- ============ SIMULATE SMS VIEW ============ -->
+            <section id="view-simulate" class="view">
+                <div class="sim-layout">
+                    <div class="card glass sim-card">
+                        <div class="card-head">
+                            <h3><i class="fa-solid fa-tower-broadcast"></i> Simulate incoming bank SMS</h3>
+                        </div>
+                        <p class="muted">Paste a bank debit SMS below. Ledger scans for the word <code>debited</code>,
+                            an amount, the account's last 4 digits, and a vendor name.</p>
+
+                        <textarea id="sms-input" class="sms-textarea" rows="4"
+                            placeholder="e.g. Rs 500 debited from a/c **1234 at Starbucks on 20-07-26"></textarea>
+
+                        <div class="sim-examples">
+                            <span class="muted small">Try:</span>
+                            <button class="chip" data-example="0">Starbucks example</button>
+                            <button class="chip" data-example="1">Amazon example</button>
+                            <button class="chip" data-example="2">Unmatched account</button>
+                        </div>
+
+                        <button id="btn-parse-sms" class="btn btn-primary btn-block">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Simulate parse
+                        </button>
+
+                        <div id="parse-result" class="parse-result"></div>
+                    </div>
+
+                    <div class="card glass sim-feed-card">
+                        <div class="card-head">
+                            <h3>Ingestion feed</h3>
+                            <span class="muted small">Newest first</span>
+                        </div>
+                        <div id="sms-feed" class="sms-feed"></div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Mobile bottom tabs (admin) -->
+        <nav class="bottom-tabs">
+            <button class="tab-link active" data-nav="admin-dashboard"><i
+                    class="fa-solid fa-chart-pie"></i><span>Home</span></button>
+            <button class="tab-link" data-nav="simulate"><i
+                    class="fa-solid fa-comment-sms"></i><span>Simulate</span></button>
+        </nav>
+
+        <!-- FAB -->
+        <button id="fab-add-child" class="fab" title="Add child">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+
+    <!-- ======================= CHILD APP SHELL (separate page, own login) ======================= -->
+    <div id="child-shell" class="app-shell child-app-shell">
+        <main class="main-area child-main-area">
+
+            <header class="topbar">
+                <div class="topbar-title">
+                    <h1 id="child-topbar-heading">Hi, Kavya</h1>
+                    <p class="muted">Here's your spending this month</p>
+                </div>
+                <div class="topbar-actions">
+                    <span class="pill"><i class="fa-regular fa-calendar"></i> <span class="current-month"></span></span>
+                    <div class="avatar" id="child-user-avatar">K</div>
+                    <button class="btn btn-ghost btn-sm" id="btn-logout-child"><i
+                            class="fa-solid fa-right-from-bracket"></i> Log out</button>
+                </div>
+            </header>
+
+            <section id="view-child-dashboard" class="view active">
+                <div class="grid-hero">
+                    <div class="card hero-card glass">
+                        <div class="hero-label" id="child-hero-label">Kavya's spend · July</div>
+                        <div class="hero-amount coral" id="child-total-spend">₹0</div>
+                        <div class="hero-meta">
+                            <span class="tag tag-budget"><i class="fa-solid fa-flag-checkered"></i> Limit: <span
+                                    id="child-limit">₹0</span></span>
+                            <span class="tag" id="child-status-tag"><i class="fa-solid fa-circle-check"></i> On
+                                track</span>
+                        </div>
+                        <div class="hero-progress">
+                            <div class="hero-progress-bar" id="child-progress-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card glass">
+                        <i class="fa-solid fa-credit-card stat-icon"></i>
+                        <div>
+                            <div class="stat-value" id="child-acct">••••</div>
+                            <div class="stat-label">Your linked account (last 4)</div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card glass">
+                        <i class="fa-solid fa-store stat-icon coral"></i>
+                        <div>
+                            <div class="stat-value" id="child-top-vendor">—</div>
+                            <div class="stat-label">Top vendor</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card glass transactions-card">
+                    <div class="card-head">
+                        <h3>Recent transactions</h3>
+                    </div>
+                    <div id="child-transactions" class="ledger-strip"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ======================= ADD CHILD MODAL (admin only) ======================= -->
+    <div id="modal-backdrop" class="modal-backdrop">
+        <div class="modal glass">
+            <div class="modal-head">
+                <h3><i class="fa-solid fa-user-plus"></i> Add a child</h3>
+                <button class="icon-btn" id="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="form-add-child">
+                <label class="field">
+                    <span>Child's name</span>
+                    <input type="text" id="input-add-child-name" placeholder="e.g. Kavya" required>
+                </label>
+                <label class="field">
+                    <span>Monthly budget limit (₹)</span>
+                    <input type="number" id="input-add-child-limit" placeholder="e.g. 5000" min="0" required>
+                </label>
+                <label class="field">
+                    <span>Account — last 4 digits</span>
+                    <input type="text" id="input-add-child-acct" placeholder="e.g. 1234" maxlength="4" pattern="[0-9]{4}"
+                        required>
+                    <small class="field-hint">This child's own individual account number (last 4 digits only) — used to
+                        match their incoming bank SMS. Each child must have a different one.</small>
+                </label>
+                <label class="field">
+                    <span>Set a 4-digit login PIN</span>
+                    <input type="text" id="input-add-child-pin" placeholder="e.g. 2468" maxlength="4" pattern="[0-9]{4}"
+                        required>
+                    <small class="field-hint">Your child uses this PIN to log in to their own account on their own
+                        device.</small>
+                </label>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fa-solid fa-user-plus"></i> Add to family
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

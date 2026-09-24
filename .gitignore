@@ -1,0 +1,90 @@
+# ==================================================
+# LEDGER - Family Expense Tracker
+# Root .gitignore
+# ==================================================
+
+# ----- ENVIRONMENT / SECRETS (NEVER COMMIT) -----
+.env
+*.env
+# Allow example templates
+!.env.example
+# Backup / temp env files
+.env.local
+.env.production
+.env.staging
+
+# ----- DEPENDENCIES -----
+node_modules/
+**/node_modules/
+
+# ----- BUILD OUTPUT -----
+dist/
+build/
+**/dist/
+**/build/
+
+# ----- TEST COVERAGE -----
+coverage/
+**/coverage/
+.nyc_output/
+
+# ----- LOGS -----
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ----- POSTGRESQL / DATABASE -----
+# Local PostgreSQL data directories
+postgres_data/
+pgdata/
+**/postgres_data/
+**/pgdata/
+
+# Database dumps and exports
+*.sql
+*.dump
+*.bak
+*.pg_dump
+
+# SQLite (if ever used)
+*.db
+*.sqlite
+*.sqlite3
+
+# ----- IDE / EDITOR -----
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+.vim/
+
+# ----- OS FILES -----
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ----- PRISMA -----
+# Keep schema.prisma and migrations tracked
+# Ignore generated client (it gets generated during build)
+**/prisma/generated/
+
+# ----- TYPESCRIPT -----
+*.tsbuildinfo
+
+# ----- OPTIONAL: CERTIFICATES -----
+*.pem
+*.key
+*.crt
+*.p12

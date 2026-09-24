@@ -1,0 +1,36 @@
+version: '3.8'
+
+# ==================================================
+# LOCAL DEVELOPMENT ONLY
+# ==================================================
+# These credentials are for local Docker development ONLY.
+# They are NOT production credentials.
+# For production, use AWS RDS PostgreSQL and AWS Secrets Manager.
+#
+# Customize the credentials below for your local setup
+# by setting environment variables before running docker-compose:
+#
+#   POSTGRES_LOCAL_USER=myuser \
+#   POSTGRES_LOCAL_PASSWORD=mypassword \
+#   POSTGRES_LOCAL_DB=ledger_dev \
+#   docker compose up -d
+#
+# Or copy .env.example to .env and add POSTGRES_LOCAL_* variables.
+# ==================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ledger_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_LOCAL_USER:-ledger_dev_user}
+      POSTGRES_PASSWORD: ${POSTGRES_LOCAL_PASSWORD:-ledger_dev_password_change_me}
+      POSTGRES_DB: ${POSTGRES_LOCAL_DB:-ledger_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

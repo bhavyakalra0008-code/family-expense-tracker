@@ -1,0 +1,101 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Family {
+  id               String            @id @default(uuid())
+  name             String
+  code             String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  adminUsers       AdminUser[]
+  children         Child[]
+  transactions     Transaction[]
+  smsIngestionLogs SmsIngestionLog[]
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  familyId     String
+  family       Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  passwordResetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id          String    @id @default(uuid())
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Child {
+  id           String            @id @default(uuid())
+  familyId     String
+  family       Family            @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  name         String
+  accountLast4 String
+  pinHash      String
+  monthlyLimit Float
+  colorTag     String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  transactions Transaction[]
+  smsLogs      SmsIngestionLog[]
+  pinResetRequests PinResetRequest[]
+
+  @@unique([familyId, accountLast4])
+}
+
+model PinResetRequest {
+  id          String   @id @default(uuid())
+  childId     String
+  child       Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  status      String   @default("PENDING")
+  requestedAt DateTime @default(now())
+  resolvedAt  DateTime?
+}
+
+model Transaction {
+  id        String           @id @default(uuid())
+  childId   String
+  child     Child            @relation(fields: [childId], references: [id], onDelete: Cascade)
+  familyId  String
+  family    Family           @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  amount    Float
+  vendor    String
+  category  String
+  date      DateTime         @default(now())
+  rawSmsId  String?          @unique
+  rawSms    SmsIngestionLog? @relation(fields: [rawSmsId], references: [id], onDelete: SetNull)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model SmsIngestionLog {
+  id              String       @id @default(uuid())
+  familyId        String
+  family          Family       @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  rawText         String
+  receivedAt      DateTime     @default(now())
+  matched         Boolean
+  childId         String?
+  child           Child?       @relation(fields: [childId], references: [id], onDelete: SetNull)
+  amount          Float?
+  vendor          String?
+  rejectionReason String?
+  transaction     Transaction?
+  createdAt       DateTime     @default(now())
+}
